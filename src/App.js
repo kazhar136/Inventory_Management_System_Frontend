@@ -4,7 +4,7 @@ import axios from "axios";
 import "./App.css";
 import RuleBasedChatbot from "./RuleBasedChatbot";
 
-const API_URL = "http://localhost:8000/items";
+const API_URL = "https://inventory-management-system-2-2vd8.onrender.com/items";
 
 function App() {
   const [items, setItems] = useState([]);
