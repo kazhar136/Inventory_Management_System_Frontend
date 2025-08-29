@@ -111,15 +111,6 @@ function App() {
 
           {/* Form */}
           <form className="form" onSubmit={handleSubmit}>
-            {editingId === null && (
-              <input
-                name="id"
-                value={form.id}
-                onChange={handleChange}
-                placeholder="ID"
-                required
-              />
-            )}
             <input
               name="name"
               value={form.name}
