@@ -8,7 +8,7 @@ const API_URL = "https://inventory-management-system-2-2vd8.onrender.com/items";
 
 function App() {
   const [items, setItems] = useState([]);
-  const [form, setForm] = useState({ name: "", quantity: "", description: "" });
+  const [form, setForm] = useState({ id: "", name: "", quantity: "", description: "" });
   const [editingId, setEditingId] = useState(null);
 
   // 🔍 Search (by name)
@@ -43,6 +43,7 @@ function App() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const payload = {
+      id: form.id, // 👈 add ID
       name: form.name,
       quantity: Number(form.quantity),
       description: form.description,
@@ -55,7 +56,7 @@ function App() {
         await axios.put(`${API_URL}/${editingId}`, payload);
         setEditingId(null);
       }
-      setForm({ name: "", quantity: "", description: "" });
+      setForm({ id: "", name: "", quantity: "", description: "" });
       fetchItems();
     } catch (err) {
       console.error("Error saving item:", err);
@@ -65,6 +66,7 @@ function App() {
   const startEdit = (item) => {
     setEditingId(item.id);
     setForm({
+      id: item.id, // 👈 also set ID in form
       name: item.name,
       quantity: String(item.quantity ?? ""),
       description: item.description ?? "",
@@ -73,7 +75,7 @@ function App() {
 
   const cancelEdit = () => {
     setEditingId(null);
-    setForm({ name: "", quantity: "", description: "" });
+    setForm({ id: "", name: "", quantity: "", description: "" });
   };
 
   const deleteItem = async (id) => {
@@ -109,6 +111,15 @@ function App() {
 
           {/* Form */}
           <form className="form" onSubmit={handleSubmit}>
+            {editingId === null && (
+              <input
+                name="id"
+                value={form.id}
+                onChange={handleChange}
+                placeholder="ID"
+                required
+              />
+            )}
             <input
               name="name"
               value={form.name}
@@ -144,13 +155,20 @@ function App() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by item name…"
-            style={{ width: "100%", padding: 10, border: "1px solid #ccc", borderRadius: 4, marginTop: 8 }}
+            style={{
+              width: "100%",
+              padding: 10,
+              border: "1px solid #ccc",
+              borderRadius: 4,
+              marginTop: 8,
+            }}
           />
 
           {/* Table */}
           <table>
             <thead>
               <tr>
+                <th>ID</th>
                 <th>Item Name</th>
                 <th>Quantity</th>
                 <th>Description</th>
@@ -161,24 +179,40 @@ function App() {
               {currentItems.length > 0 ? (
                 currentItems.map((item) => (
                   <tr key={item.id}>
+                    <td>{item.id}</td>
                     <td>{item.name}</td>
                     <td>{item.quantity}</td>
                     <td>{item.description}</td>
                     <td>
-                      <button className="edit-btn" onClick={() => startEdit(item)}>Edit</button>
-                      <button className="delete-btn" onClick={() => deleteItem(item.id)}>Delete</button>
+                      <button className="edit-btn" onClick={() => startEdit(item)}>
+                        Edit
+                      </button>
+                      <button className="delete-btn" onClick={() => deleteItem(item.id)}>
+                        Delete
+                      </button>
                     </td>
                   </tr>
                 ))
               ) : (
-                <tr><td colSpan="4" style={{ textAlign: "center" }}>No items found</td></tr>
+                <tr>
+                  <td colSpan="5" style={{ textAlign: "center" }}>
+                    No items found
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>
 
           {/* 📑 Pagination */}
           {filtered.length > itemsPerPage && (
-            <div style={{ marginTop: 12, display: "flex", gap: 6, justifyContent: "center" }}>
+            <div
+              style={{
+                marginTop: 12,
+                display: "flex",
+                gap: 6,
+                justifyContent: "center",
+              }}
+            >
               <button
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
