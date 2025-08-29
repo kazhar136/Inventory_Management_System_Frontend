@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import "./RuleBasedChatbot.css";
 
@@ -22,19 +22,26 @@ Here are some commands you can try:
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false); // popup state
 
+  const messagesEndRef = useRef(null);
+
+  // ✅ Auto-scroll on new messages
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   // helper: append message
   const pushMessage = (msg) => setMessages((m) => [...m, msg]);
 
-  // helper: format small item list
+  // helper: format item list (id bhi dikhayega)
   const formatItems = (list, max = 10) => {
     if (!list.length) return "No items.";
     return list
       .slice(0, max)
-      .map((it) => `${it.name} (qty: ${it.quantity})`)
+      .map((it) => `#${it.id} - ${it.name} (qty: ${it.quantity})`)
       .join("\n");
   };
 
-  // parse commands (same as before)...
+  // parse commands
   const parseCommand = (text) => {
     const t = text.trim();
     const lower = t.toLowerCase();
@@ -164,11 +171,12 @@ Here are some commands you can try:
             quantity: Number(action.qty),
             description: "",
           };
-          await axios.post(API_URL, payload);
+          const res = await axios.post(API_URL, payload);
+          const newItem = res.data;
           await refreshItems?.();
           pushMessage({
             sender: "bot",
-            text: `✅ Added "${action.name}" (qty: ${action.qty}).`,
+            text: `✅ Added #${newItem.id} - "${newItem.name}" (qty: ${newItem.quantity}).`,
           });
           break;
         }
@@ -198,7 +206,7 @@ Here are some commands you can try:
             await refreshItems?.();
             pushMessage({
               sender: "bot",
-              text: `✏️ Updated "${targetItem.name}" → qty ${action.qty}.`,
+              text: `✏️ Updated #${targetItem.id} - "${targetItem.name}" → qty ${action.qty}.`,
             });
           }
           break;
@@ -224,7 +232,7 @@ Here are some commands you can try:
             await refreshItems?.();
             pushMessage({
               sender: "bot",
-              text: `🗑️ Deleted "${targetItem.name}".`,
+              text: `🗑️ Deleted #${targetItem.id} - "${targetItem.name}".`,
             });
           }
           break;
@@ -265,10 +273,7 @@ Here are some commands you can try:
       <div className={`chatbot-container ${isOpen ? "open" : ""}`}>
         <div className="chatbot-header">
           📋 Inventory Assistant
-          <button
-            className="close-btn"
-            onClick={() => setIsOpen(false)}
-          >
+          <button className="close-btn" onClick={() => setIsOpen(false)}>
             ✖
           </button>
         </div>
@@ -282,6 +287,7 @@ Here are some commands you can try:
           {loading && (
             <div style={{ fontStyle: "italic", color: "#666" }}>Typing...</div>
           )}
+          <div ref={messagesEndRef} /> {/* ✅ auto-scroll anchor */}
         </div>
 
         <div className="chatbot-input">
