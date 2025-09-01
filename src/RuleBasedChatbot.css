@@ -1,31 +1,33 @@
-/* RuleBasedChatbot.css */
-
 .chatbot-container {
-  width: 400px;
-  max-width: 95%;
-  height: 600px;
-  max-height: 90vh;
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 320px;
+  height: 400px;
   background: #fff;
-  border-radius: 10px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0px 4px 12px rgba(0,0,0,0.2);
+  z-index: 1000;
   font-family: Arial, sans-serif;
 }
 
 .chatbot-header {
-  background: #007bff;
+  background: #0078ff;
   color: white;
-  padding: 12px;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  border-radius: 12px 12px 0 0;
   font-weight: bold;
-  text-align: center;
 }
 
 .chatbot-messages {
   flex: 1;
   padding: 10px;
-  overflow-y: auto;
+  overflow-y: auto;   /* ✅ scroll enable */
   background: #f9f9f9;
   font-size: 14px;
 }
@@ -88,38 +90,7 @@
   background: #0056b3;
 }
 
-/* 📱 Mobile Responsive */
-@media (max-width: 600px) {
-  .chatbot-container {
-    width: 100%;
-    height: 100vh;
-    max-width: 100%;
-    max-height: 100vh;
-    border-radius: 0;
-    box-shadow: none;
-  }
-
-  .chatbot-header {
-    font-size: 16px;
-    padding: 10px;
-  }
-
-  .chatbot-messages {
-    font-size: 13px;
-    padding: 8px;
-  }
-
-  .chatbot-input textarea {
-    font-size: 12px;
-    padding: 8px;
-  }
-
-  .chatbot-input button {
-    font-size: 14px;
-    padding: 0 12px;
-  }
-}
-/* Floating Button (only visible on mobile) */
+/* Floating Button */
 .chatbot-toggle {
   display: none;
   position: fixed;
@@ -136,23 +107,7 @@
   z-index: 1000;
 }
 
-/* Chatbot Box */
-.chatbot-container {
-  position: fixed;
-  bottom: 80px;
-  right: 20px;
-  width: 320px;
-  height: 400px;
-  background: white;
-  border: 1px solid #ccc;
-  border-radius: 12px;
-  display: block; /* desktop पर हमेशा दिखेगा */
-  flex-direction: column;
-  box-shadow: 0px 4px 12px rgba(0,0,0,0.2);
-  z-index: 1000;
-}
-
-/* mobile पर बंद होगा और toggle से खुलेगा */
+/* Mobile Responsive */
 @media (max-width: 768px) {
   .chatbot-container {
     display: none;
@@ -169,15 +124,6 @@
   .chatbot-toggle {
     display: block;
   }
-}
-
-.chatbot-header {
-  background: #0078ff;
-  color: white;
-  padding: 10px;
-  display: flex;
-  justify-content: space-between;
-  border-radius: 12px 12px 0 0;
 }
 
 .close-btn {

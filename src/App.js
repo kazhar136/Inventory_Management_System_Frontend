@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./App.css";
@@ -40,28 +39,32 @@ function App() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const payload = {
-      id: form.id, // 👈 add ID
-      name: form.name,
-      quantity: Number(form.quantity),
-      description: form.description,
-    };
-
-    try {
-      if (editingId === null) {
-        await axios.post(API_URL, payload);
-      } else {
-        await axios.put(`${API_URL}/${editingId}`, payload);
-        setEditingId(null);
-      }
-      setForm({ id: "", name: "", quantity: "", description: "" });
-      fetchItems();
-    } catch (err) {
-      console.error("Error saving item:", err);
-    }
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  const payload = {
+    name: form.name,
+    quantity: Number(form.quantity),
+    description: form.description,
   };
+
+  try {
+    if (editingId === null) {
+      // Add new item → push at top
+      const res = await axios.post(API_URL, payload);
+      setItems([res.data, ...items]); 
+    } else {
+      // Update existing → replace in local state
+      const res = await axios.put(`${API_URL}/${editingId}`, payload);
+      setItems((prev) =>
+        prev.map((it) => (it.id === editingId ? res.data : it))
+      );
+      setEditingId(null);
+    }
+    setForm({ name: "", quantity: "", description: "" });
+  } catch (err) {
+    console.error("Error saving item:", err);
+  }
+};
 
   const startEdit = (item) => {
     setEditingId(item.id);

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import "./RuleBasedChatbot.css";
 
-const API_URL = "http://localhost:8000/items";
+const API_URL = "https://inventory-management-system-2-2vd8.onrender.com/items";
 
 export default function RuleBasedChatbot({ items = [], refreshItems }) {
   const [messages, setMessages] = useState([
