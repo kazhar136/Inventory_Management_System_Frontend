@@ -39,37 +39,37 @@ function App() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
-  const payload = {
-    name: form.name,
-    quantity: Number(form.quantity),
-    description: form.description,
-  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const payload = {
+      name: form.name,
+      quantity: Number(form.quantity),
+      description: form.description,
+    };
 
-  try {
-    if (editingId === null) {
-      // Add new item → push at top
-      const res = await axios.post(API_URL, payload);
-      setItems([res.data, ...items]); 
-    } else {
-      // Update existing → replace in local state
-      const res = await axios.put(`${API_URL}/${editingId}`, payload);
-      setItems((prev) =>
-        prev.map((it) => (it.id === editingId ? res.data : it))
-      );
-      setEditingId(null);
+    try {
+      if (editingId === null) {
+        // Add new item → push at top
+        const res = await axios.post(API_URL, payload);
+        setItems([res.data, ...items]);
+      } else {
+        // Update existing → replace in local state
+        const res = await axios.put(`${API_URL}/${editingId}`, payload);
+        setItems((prev) =>
+          prev.map((it) => (it.id === editingId ? res.data : it))
+        );
+        setEditingId(null);
+      }
+      setForm({ name: "", quantity: "", description: "" });
+    } catch (err) {
+      console.error("Error saving item:", err);
     }
-    setForm({ name: "", quantity: "", description: "" });
-  } catch (err) {
-    console.error("Error saving item:", err);
-  }
-};
+  };
 
   const startEdit = (item) => {
     setEditingId(item.id);
     setForm({
-      id: item.id, // 👈 also set ID in form
+      id: item.id,
       name: item.name,
       quantity: String(item.quantity ?? ""),
       description: item.description ?? "",
@@ -106,7 +106,7 @@ function App() {
   }, [totalPages, currentPage]);
 
   return (
-    <div className="app-root" style={{ display: "flex", gap: 20, padding: 20 }}>
+    <div className="app-root">
       {/* Left: Inventory UI */}
       <div style={{ flex: 1 }}>
         <div className="container">
@@ -135,7 +135,9 @@ function App() {
               onChange={handleChange}
               placeholder="Description"
             />
-            <button type="submit">{editingId === null ? "Add Item" : "Save Changes"}</button>
+            <button type="submit">
+              {editingId === null ? "Add Item" : "Save Changes"}
+            </button>
             {editingId !== null && (
               <button type="button" className="secondary-btn" onClick={cancelEdit}>
                 Cancel
@@ -173,15 +175,18 @@ function App() {
               {currentItems.length > 0 ? (
                 currentItems.map((item) => (
                   <tr key={item.id}>
-                    <td>{item.id}</td>
-                    <td>{item.name}</td>
-                    <td>{item.quantity}</td>
-                    <td>{item.description}</td>
-                    <td>
+                    <td data-label="ID">{item.id}</td>
+                    <td data-label="Item Name">{item.name}</td>
+                    <td data-label="Quantity">{item.quantity}</td>
+                    <td data-label="Description">{item.description}</td>
+                    <td data-label="Action">
                       <button className="edit-btn" onClick={() => startEdit(item)}>
                         Edit
                       </button>
-                      <button className="delete-btn" onClick={() => deleteItem(item.id)}>
+                      <button
+                        className="delete-btn"
+                        onClick={() => deleteItem(item.id)}
+                      >
                         Delete
                       </button>
                     </td>
